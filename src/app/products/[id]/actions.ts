@@ -1,5 +1,5 @@
 "use server";
 
-export async function incrementProductQuantity(params:type) {
+export async function incrementProductQuantity(params: string) {
     
 }
