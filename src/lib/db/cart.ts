@@ -32,7 +32,9 @@ export async function getCart(): Promise<ShoppingCart| null> {
     const session = await getServerSession(authOptions)
     let cart: CartWithProducts | null = null;
     if (session) {
-
+        cart = await prisma.cart.findFirst({
+            where: {userId}
+        })
     }else {
         const localCartId = cookies().get('localCartId')?.value;
         cart = localCartId ?
@@ -47,8 +49,7 @@ export async function getCart(): Promise<ShoppingCart| null> {
     await prisma.cart.findUnique({
         where: {id: localCartId},
         include: { cartItem: {include: {product: true} } }
-    })
-    : null;
+    }) : null;
 
     if (!cart) {
         return null
