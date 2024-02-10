@@ -1,4 +1,5 @@
 import ProductCard from '@/components/ProductCard';
+import PaginationBar from '@/components/PaginationBar';
 import { prisma } from '@/lib/db/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,6 +35,7 @@ export default async function Home() {
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
+      <PaginationBar currentPage={1} totalPages={99} />
     </div>
   )
 }
