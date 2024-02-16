@@ -6,6 +6,7 @@ import ShoppingCartButton from "./ShoppingCartButton";
 import UserMenuButton from "./UserMenuButton";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import logo from "@/assets/logo.png"
 
 async function searchProducts(formData: FormData) {
     "use server";
@@ -26,8 +27,7 @@ async function searchProducts(formData: FormData) {
 
 export default async function Navbar() {
     const session = await getServerSession(authOptions)
-    const logo = "https://i.ibb.co/6R0y8ZT/WhereYes-Logo.png";
-    const cart = await getCart;
+    const cartData = await getCart();
     return (
         <div className="bg-base-100">
             <div className="navbar max-w-7xl m-auto flex-col sm:flex-row gap-2">
@@ -43,7 +43,7 @@ export default async function Navbar() {
                             <input name="searchQuery" type="text" placeholder="Search" className="input input-bordered w-full min-w-[100px]" />
                         </div>
                     </form>
-                    <ShoppingCartButton cart={cart} />
+                    <ShoppingCartButton cart={cartData} />
                     <UserMenuButton session={session} />
                 </div>
             </div>

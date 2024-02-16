@@ -11,6 +11,7 @@ export async function incrementProductQuantity(productId: string) {
   const articleInCart = cart.cartItem.find((cartItem) => cartItem.productId === productId);
 
   if (articleInCart) {
+ 
     await prisma.cart.update({
       where: { id: cart.id },
       data: {cartItem: { update: {

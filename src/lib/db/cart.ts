@@ -65,7 +65,7 @@ export async function getCart(): Promise<ShoppingCart| null> {
 }
 
 
-export async function createCart(): Promise<ShoppingCart > {
+export async function createCart(): Promise<ShoppingCart> {
     const session = await getServerSession(authOptions);
 
     let newCart: Cart;
@@ -93,76 +93,80 @@ export async function createCart(): Promise<ShoppingCart > {
     }
 }
 
-
-
 export async function mergeAnonymousCartIntoUserCart(userId: string) {
-    const localCartId = cookies().get('localCartId')?.value;
-
-    const localCart = localCartId ?
-        await prisma.cart.findUnique({
-            where: { id: localCartId },
-            include: { cartItem: true },
-        }) : null;
-
+    const localCartId = cookies().get("localCartId")?.value;
+  
+    const localCart = localCartId
+      ? await prisma.cart.findUnique({
+          where: { id: localCartId },
+          include: { cartItem: true },
+        })
+      : null;
+  
     if (!localCart) return;
+  
     const userCart = await prisma.cart.findFirst({
-        where: { userId },
-        include: { cartItem: true },
+      where: { userId },
+      include: { cartItem: true },
     });
-    await prisma.$transaction(async tx => {
-        if (userCart) {
-            const mergedCartItems = mergeCartItems(localCart.cartItem, userCart.cartItem);
-            await tx.cartItem.deleteMany({ where: { cartId: userCart.id } });
-            
-            await tx.cart.update({
-                where: { id: userCart.id },
-                data: {
-                    cartItem: {
-                        createMany: {
-                            data: mergedCartItems.map(items => ({
-                                productId: items.productId,
-                                quantity: items.quantity
-                            })),
-                        }
-                    }
-                }
-            })
+  
+    await prisma.$transaction(async (tx) => {
+      if (userCart) {
+        const mergedCartItems = mergeCartItems(localCart.cartItem, userCart.cartItem);
+  
+        await tx.cartItem.deleteMany({
+          where: { cartId: userCart.id },
+        });
 
-
+        await tx.cart.update({
+          where: { id: userCart.id },
+          data: {
+            cartItem: {
+              createMany: {
+                data: mergedCartItems.map((item) => ({
+                  productId: item.productId,
+                  quantity: item.quantity,
+                })),
+              },
+            },
+          },
+        })
+  
+      } else {
+        await tx.cart.create({
+          data: {
+            userId,
+            cartItem: {
+              createMany: {
+                data: localCart.cartItem.map((cartItem) => ({
+                  productId: cartItem.productId,
+                  quantity: cartItem.quantity,
+                })),
+              },
+            },
+          },
+        });
+      }
+  
+      await tx.cart.delete({
+        where: { id: localCart.id },
+      });
+      // throw Error("Transaction failed");
+      cookies().set("localCartId", "");
+    });
+  }
+  
+  function mergeCartItems(...cartItems: CartItem[][]): CartItem[] {
+    return cartItems.reduce((acc, items) => {
+      items.forEach((item) => {
+        const existingItem = acc.find((i) => i.productId === item.productId);
+        if (existingItem) {
+          existingItem.quantity += item.quantity;
         } else {
-            await tx.cart.create({
-                data: {
-                    userId,
-                    cartItem: {
-                        createMany: {
-                            data: localCart.cartItem.map(item => ({
-                                productId: item.productId,
-                                quantity: item.quantity
-                            })),
-                        }
-                    }
-                }
-            })
+          acc.push(item);
         }
-        await tx.cart.delete({
-            where: { id: localCart.id }
-        });
-        cookies().set("localCartId", "")
-    })
-    }
+      });
+      return acc;
+    }, [] as CartItem[]);
+  }
 
-
-
-function mergeCartItems(...cartProducts: CartItem[][]) {
-    return cartProducts.reduce((acc, items) => {
-        items.forEach((item) => {
-            const existingItem = acc.find((i) => i.productId === item.productId);
-            if (existingItem) {
-                existingItem.quantity += item.quantity;
-            } else {
-                acc.push(item);
-            }
-        });
-        return acc;
-    }, [] as CartItem[])
-}

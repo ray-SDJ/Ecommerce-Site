@@ -61,3 +61,4 @@ export default async function Home({searchParams : {page = "1" }}: HomeProps) {
     </div>
   )
 }
+

@@ -23,6 +23,17 @@ export async function setProductQuantity(productId: string, quantity: number) {
     } else {
         if (articleInCart) {
             await prisma.cart.update({
+                where: { id: articleInCart.id},
+                data: {
+                    cartItem: {
+                        update: {
+                            where: { id: articleInCart.id },
+                            data: { quantity }
+                        }
+                    }
+                }
+            })
+            await prisma.cart.update({
                 where: { id: cart.id },
                 data: {
                     cartItem: {
@@ -35,6 +46,17 @@ export async function setProductQuantity(productId: string, quantity: number) {
             })
 
         } else {
+            await prisma.cart.update({
+                where: { id: cart.id },
+                data: {
+                    cartItem: {
+                        create: {
+                            productId,
+                            quantity,
+                        },
+                    },
+                },
+            })
             await prisma.cart.update({
                 where: { id: cart.id },
                 data: {
