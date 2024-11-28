@@ -1,18 +1,53 @@
-E-commerce Website with Next.js, Prisma, MongoDB, and Tailwind CSS
+Full-Stack E-Commerce Platform
+A modern, secure e-commerce solution built with Next.js, TypeScript, and MongoDB.
+Features
 
-This repository contains the source code for a modern e-commerce website built with a powerful technology stack:
+User authentication and authorization
+Product catalog with search and filtering
+Shopping cart management
+Secure checkout process
+Order tracking
+Admin dashboard
+Inventory management
+Responsive design
 
-Next.js: Server-side rendering (SSR) for SEO and performance, dynamic routing for product pages and categories.
-Prisma: Type-safe database interactions with MongoDB, reducing boilerplate and ensuring data integrity.
-MongoDB: Flexible NoSQL database for scalability and schema flexibility.
-Tailwind CSS: Utility-first approach for efficient and rapid UI development.
-Features:
+Tech Stack
 
-Intuitive product browsing:
-Clear product listings with detailed information, including images, descriptions, and prices.
-Searchable product catalog for easy discovery.
-Category and subcategory navigation for organized shopping.
-Seamless checkout:
-Add products to cart with clear indications of added items and quantities.
-Secure checkout process with various payment options.
-Order tracking and management for customers.
+Frontend: Next.js, TypeScript, TailwindCSS
+Backend: Node.js, Express
+Database: MongoDB with Prisma ORM
+Authentication: NextAuth.js
+Payment Processing: Stripe
+Deployment: Vercel
+
+Installation
+bashCopy# Clone repository
+git clone [repository-url]
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+
+# Run development server
+npm run dev
+Environment Variables
+CopyDATABASE_URL=
+NEXTAUTH_SECRET=
+STRIPE_SECRET_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+API Routes
+
+/api/auth/* - Authentication endpoints
+/api/products - Product management
+/api/orders - Order processing
+/api/cart - Cart operations
+
+Contributing
+
+Fork the repository
+Create feature branch
+Commit changes
+Push to branch
+Open pull request
